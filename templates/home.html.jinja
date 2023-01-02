@@ -1,0 +1,135 @@
+{% extends 'layout.html.jinja' %}
+
+{% block body %}
+    <div class="px-4 py-5 text-center">
+        <h1 class="display-5 fw-bold">
+            {% with icon_size=64 %}{% include 'includes/icon_twitter.html.jinja' %}{% endwith %}
+            {% with icon_size=64 %}{% include 'includes/icon_mastodon.html.jinja' %}{% endwith %}
+        </h1>
+        <small>v{{ config.APP_VERSION }}</small>
+        <div class="col-md-8 mx-auto">
+            <p class="fs-5 col-mb-4">
+                Find Mastodon handles in the description of the Twitter users that you are following.
+            </p>
+            <div class="row justify-content-sm-center">
+                <div class="col col-md-6">
+                    <div class="input-group has-validation">
+                        <div class="input-group-text">@</div>
+                        <input type="text" class="form-control form-control-lg" name="username" id="search-username"
+                               placeholder="username">
+                        <div id="search-username-error" class="invalid-feedback visually-hidden">
+                            Please choose a username.
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-md-3">
+                    <button type="button" class="btn btn-primary btn-lg" id="btn-search" onclick="search()">
+                        <span id="btn-search-loading-spinner" class="spinner-border spinner-border-sm visually-hidden"
+                              role="status" aria-hidden="true"></span>
+                        <span id="btn-search-text">Search</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <hr class="col-8 col-md-8 mx-auto">
+    </div>
+    <div id="search-result"></div>
+
+{#    {% include 'includes/search_history.html.jinja' %}#}
+
+    <script type="text/javascript">
+        document.getElementById('search-username').addEventListener('keypress', function(event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            search()
+          }
+        });
+
+        function search() {
+            if (!usernameIsValid()) {
+                return false
+            }
+
+            blockSearch()
+            doSearchRequest()
+        }
+
+        function usernameIsValid() {
+            let search_username_field = document.getElementById('search-username')
+            let search_username_error = document.getElementById('search-username-error')
+            if (search_username_field.value.length === 0) {
+                search_username_error.classList.remove('visually-hidden')
+                search_username_error.style.display = 'block'
+
+                return false
+            }
+
+            search_username_error.classList.add('visually-hidden')
+            search_username_error.style.display = 'none'
+
+            return true
+        }
+
+        function blockSearch() {
+            let search_button = document.getElementById('btn-search')
+            search_button.setAttribute('disabled', 'disabled')
+
+            let search_button_text = document.getElementById('btn-search-text')
+            search_button_text.innerText = 'Searching...'
+
+            let search_button_loading_spinner = document.getElementById('btn-search-loading-spinner')
+            search_button_loading_spinner.classList.remove('visually-hidden')
+
+            let search_username_field = document.getElementById('search-username')
+            search_username_field.setAttribute('disabled', 'disabled')
+        }
+
+        function unblockSearch() {
+            search_button = document.getElementById('btn-search')
+            search_button.removeAttribute('disabled')
+
+            search_button_text = document.getElementById('btn-search-text')
+            search_button_text.innerText = 'Search'
+
+            search_button_loading_spinner = document.getElementById('btn-search-loading-spinner')
+            search_button_loading_spinner.classList.add('visually-hidden')
+
+            search_username_field = document.getElementById('search-username')
+            search_username_field.removeAttribute('disabled')
+        }
+
+        function doSearchRequest() {
+            let search_result = document.getElementById('search-result')
+            search_result.innerHTML = ''
+
+            let search_username_field = document.getElementById('search-username')
+            let searchRequest = new Request(
+                '{{ url_for('search') }}',
+                {
+                    method: 'POST',
+                    body: 'username='+search_username_field.value,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                },
+            )
+
+            fetch(searchRequest)
+                .then((response) => {
+                    if (!response.ok) {
+                        console.log(response)
+                        unblockSearch()
+                    }
+                    console.log(response)
+                    Promise.resolve(response.text()).then((responseHtml) => {
+                        search_result.innerHTML = responseHtml
+                    })
+                    unblockSearch()
+                }).catch((response) => {
+                    console.log(response)
+                    unblockSearch()
+                })
+        }
+    </script>
+
+{% endblock %}

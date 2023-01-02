@@ -1,0 +1,37 @@
+<div class="px-3 bg-body rounded shadow-sm">
+    {% if errors %}
+        {% for error in errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+    {% elif results %}
+        <h4 class="pb-2 mb-0">{{ results|length }} results</h4>
+        {% if using_cache == True %}
+            <small class="text-muted ">
+                Cached on {{ cache_info['date'] }} | <a href="{{ url_for('cache_delete', username=search) }}">Clear</a>
+            </small>
+        {% endif  %}
+        {% for result in results %}
+            <div class="d-flex text-muted pt-3">
+                {% with icon_size=32 %}{% include 'includes/icon_twitter.html.jinja' %}{% endwith %}
+                <p class="pb-3 mb-0 small lh-sm">
+                    <strong class="d-block text-gray-dark">
+                        <span class="badge text-bg-primary">{{ result['t_username'] }}</span> ({{ result['t_name'] }})
+                    </strong>
+                    <i>{{ result['t_description'] }}</i>
+                </p>
+            </div>
+            <div class="d-flex text-muted pt-3 pb-3 border-bottom border-4">
+                {% with icon_size=32 %}{% include 'includes/icon_mastodon.html.jinja' %}{% endwith %}
+                <p class="pb-3 mb-0 small lh-sm">
+                    <strong class="d-block text-gray-dark">
+                        <span class="badge text-bg-primary">{{ result['m_username'] }}</span> ({{ result['m_name'] }})
+                    </strong>
+                    <i>{{ result['m_description']|striptags }}</i>
+                </p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <h4 class="pb-2 mb-0">No results</h4>
+    {% endif %}
+</div>
+

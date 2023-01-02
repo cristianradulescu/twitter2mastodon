@@ -1,0 +1,5 @@
+.text-bg-mastodon {
+    color: #fff!important;
+    --tw-bg-opacity: 1;
+    background-color: rgb(86 58 204/var(--tw-bg-opacity));
+}
