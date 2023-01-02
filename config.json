@@ -2,11 +2,11 @@
   "APP_VERSION": "0.0.2",
 
   "TWITTER_API_URL": "https://api.twitter.com/2",
-  "TWITTER_API_TOKEN": "TW_API_TOKEN"
+  "TWITTER_API_TOKEN": "TW_API_TOKEN",
   "TWITTER_API_MAX_RESULTS": 500,
 
   "MASTODON_API_URL": "https://mastodon.social/api/v2",
-  "MASTODON_API_TOKEN": "MA_API_TOKEN" 
+  "MASTODON_API_TOKEN": "MA_API_TOKEN", 
 
   "SQLALCHEMY_TRACK_MODIFICATIONS": false,
   "SQLALCHEMY_DATABASE_URI": "sqlite:///project.db"
