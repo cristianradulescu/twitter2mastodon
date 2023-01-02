@@ -7,4 +7,5 @@ Small app created with the purpose of learning Python & Flask.
 Setup:
 * Create virtual env
 * Install requirements
+* Initialize database - run `flask shell` to open interactive console then `db.create_all()` and exit the console
 * Run `flask --debug run`
